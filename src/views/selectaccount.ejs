@@ -1,0 +1,38 @@
+<label for="basic-url" class="form-label">Số lượng acc:</label>
+<div class="input-group mb-3">
+    <input
+        id="numberAccount"
+        type="text"
+        class="form-control"
+        placeholder=""
+        value="0-10"
+    />
+    <button
+        class="bt btn-success"
+        onclick="getAccount()"
+    >
+       Lấy Acc
+    </button>
+</div>
+<div id="accountName" class="border border-dark border-2" style="overflow:auto; max-height: 400px;"></div>
+<script>
+    const getAccount = async () => {
+        document.getElementById("accountName").innerHTML = ''
+        try {
+            let startEnd = document.getElementById("numberAccount").value;
+            if(startEnd != ''){
+                const words = startEnd.split('-');
+                let url = "getAccount?&start="+ words[0] +"&end=" + words[1];
+                let response = await axios.get(url);
+                response.data.forEach(element => {
+                    document.getElementById("accountName").innerHTML += ' ' + element;
+                });
+            }else{
+                document.getElementById("accountName").innerHTML = 'Chưa nhập thứ tự!'
+            }
+            
+        } catch (err) {
+            document.getElementById("accountName").innerHTML  = err;
+        }
+    };
+</script>

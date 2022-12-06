@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+    <script src="/jquery-3.6.0.min.js"></script>
+    <title>Document</title>
+    <style>
+        body {
+            background: #f6f5f7;
+            background: linear-gradient(to right, #4ae4b6, #0f9c72);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh;
+            margin: -20px 0 50px;
+        }
+        
+        .overlay {
+            background: #ffffff;
+            height: 100%;
+        }
+        
+        h3,
+        .h3 {
+            font-size: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="d-flex justify-content-center bd-highlight mb-4 m-4 border
+				border-2 rounded-pill overlay">
+            <div class="col-8 text-center pt-5">
+                <h2>Security Code Generator Google 2FA</h2>
+
+                <div class="mb-4 m-4 row">
+                    <label for="inputPassword" class="col-sm-2 col-form-label">Account</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="account" />
+                    </div>
+                </div>
+
+                <div class="mb-4 m-4 row">
+                    <label for="inputPassword" class="col-sm-2 col-form-label">2FA Key</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="key" />
+                    </div>
+                </div>
+
+                <div class="mb-4 m-4 row">
+                    <label for="staticEmail" class="col-sm-2 col-form-label">Code</label>
+                    <div class="col-sm-8">
+                        <p id="code" class="title  h3"> 2FA CODE</p>
+                    </div>
+                </div>
+
+                
+                <div class="mb-4 m-4 row">
+                    <label for="staticEmail" class="col-sm-2 col-form-label">Time</label>
+                    <div class="col-sm-8">
+                        <p id="time" class="title  h4 mt-2"></p>
+                    </div>
+                </div>
+                <div class="d-grid gap-2 col-6 mx-auto">
+                    <button id="copy" onclick="copyToClipboard('#code')" type="button" class="btn btn-primary m-2">Copy</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        
+        var s = null
+        var timeout = null
+        var myInterval = null
+        var account = null
+        var key = null
+        window.onload = function(){ 
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    
+                    readXML(this);
+                }
+            };
+            xmlhttp.open("GET", "2fa.xml", true);
+            xmlhttp.send();
+        }
+        function readXML (xml) {
+            var xmlDoc = xml.responseXML;
+            account = xmlDoc.getElementsByTagName("record");
+        }
+
+        $("#account").on("input", function() {
+            let inputAccount = $(this).val();
+            for (i = 0; i < account.length; i++) {
+                var y = account[i].getElementsByTagName("user");
+                if(y[0].innerHTML == inputAccount){
+                    if (myInterval != null) {
+                        clearTimeout(myInterval)
+                    }
+                    $("#key").val(account[i].getElementsByTagName("c2fa")[0].innerHTML);
+                    loadCode(account[i].getElementsByTagName("c2fa")[0].innerHTML)
+                }
+            }
+
+        });
+
+        $("#key").on("input", function() {
+            key = $(this).val();
+            if (key.length >= 16) {
+                if (myInterval != null) {
+                    clearTimeout(myInterval)
+                }
+                loadCode(key);
+            }
+        });
+
+        function getTime() {
+            const d = new Date();
+            let seconds = d.getSeconds();
+            return 30 - (seconds % 30)
+        }
+
+        function loadCode(key) {
+            console.log(key)
+            const xhttp = new XMLHttpRequest();
+            let time = getTime()
+            xhttp.onload = function() {
+                let token = JSON.parse(this.responseText);
+                clearTimeout(timeout);
+                document.getElementById("time").innerHTML = time
+                document.getElementById("code").innerHTML = token.token;
+                console.log(key + ":" + token.token)
+                s = null
+                start()
+            };
+            xhttp.open("GET", "/" + key);
+            xhttp.send();
+            myInterval = setTimeout(loadCode, time * 1000, key);
+        }
+
+        function start() {
+            /*BƯỚC 1: LẤY GIÁ TRỊ BAN ĐẦU*/
+            if (s === null) {
+                s = parseInt(document.getElementById("time").innerHTML);
+            }
+            if (s == -1) {
+                clearTimeout(timeout);
+                return false;
+            }
+            document.getElementById("time").innerHTML = s.toString();
+
+            /*BƯỚC 1: GIẢM PHÚT XUỐNG 1 GIÂY VÀ GỌI LẠI SAU 1 GIÂY */
+            timeout = setTimeout(function() {
+                s--;
+                start();
+            }, 1000);
+        }
+
+        function copyToClipboard(element) {
+            var $temp = $("<input>");
+            $("body").append($temp);
+            $temp.val($(element).text()).select();
+            document.execCommand("copy");
+            $temp.remove();
+        }
+    </script>
+</body>
+
+</html>

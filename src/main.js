@@ -12,7 +12,7 @@ app.use(express.urlencoded({
 }))
 app.use(express.json())
 
-const route = require('./routes')
+const route = require('./routes/index')
 route(app, )
 
 

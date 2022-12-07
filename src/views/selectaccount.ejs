@@ -14,7 +14,7 @@
        Lấy Acc
     </button>
 </div>
-<div id="accountName" class="border border-dark border-2" style="overflow:auto; max-height: 400px;"></div>
+<div id="accountName" class="border border-dark border-2 pt-2" style="overflow:auto; max-height: 300px;"></div>
 <script>
     const getAccount = async () => {
         document.getElementById("accountName").innerHTML = ''
@@ -25,7 +25,10 @@
                 let url = "getAccount?&start="+ words[0] +"&end=" + words[1];
                 let response = await axios.get(url);
                 response.data.forEach(element => {
-                    document.getElementById("accountName").innerHTML += ' ' + element;
+                    const para = document.createElement("p");
+                    const node = document.createTextNode(element);
+                    para.appendChild(node);
+                    document.getElementById("accountName").appendChild(para);
                 });
             }else{
                 document.getElementById("accountName").innerHTML = 'Chưa nhập thứ tự!'

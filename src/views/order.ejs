@@ -9,7 +9,9 @@
             rel="stylesheet"
             integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
             crossorigin="anonymous"
+
         />
+     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     </head>
     <body>
         <div class="container-fluid">
@@ -47,27 +49,30 @@
                         <div class="col-3">
                             <%- include('selectaccount', {page_name}); -%>
                         </div>
-                        <div class="col-6 border border-dark p-3">
-                            <div class="">
+                        <div class="col-4 border border-dark p-3">
+                            <div class="mb-3">
                                 <input type="radio" class="btn-check" name="buy-sale" id="success-outlined" value="buy" checked>
                                 <label class="btn btn-outline-success col-5" for="success-outlined">Mua</label>
 
                                 <input type="radio" class="btn-check" name="buy-sale" id="danger-outlined" value="sale" >
                                 <label class="btn btn-outline-danger col-5" for="danger-outlined">Bán</label>
                             </div>
+                            <div class="input-group mb-3">
+                                <label class="input-group-text" for="inputGroupSelect01" style="padding: 0.375rem 6rem;">Loại</label>
+                                <select class="form-select" id="inputGroupSelect01">
+                                  <option class="p-2" selected value="LIMIT">Giới hạn</option>
+                                  <option class="p-2" value="MARKET">Thị trường</option>
+                                </select>
+                            </div>
                             <div class="input-group mt-3 mb-3">
-                                <span class="input-group-text" id="inputGroup-sizing-default">Default</span>
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                <input type="text" class="form-control" placeholder="Giá" id="price" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
                             </div>
                             <div class="input-group mb-3">
-                                <span class="input-group-text" id="inputGroup-sizing-default">Default</span>
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                                <input type="text" class="form-control" placeholder="Số lượng" id="amount" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
                             </div>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="inputGroup-sizing-default">Default</span>
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                            <div class="d-grid gap-2 d-md-block mb-3">
+                                <button class="btn btn-outline-primary col-10" > Xác nhận</button>
                             </div>
-                              
                         </div>
                     </div>
                     <!-- <%- include('footer'); -%> -->

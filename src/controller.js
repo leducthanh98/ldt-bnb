@@ -43,7 +43,8 @@ class Controller {
 
     getAccount = async (req, res, next) => {
         try {
-            let data = await this.loadFile('./account.json');
+
+            let data = await this.loadFile('../account.json');
             data = JSON.parse(data);
             let start = req.query.start;
             let end = req.query.end ? req.query.end : data.length - 1;

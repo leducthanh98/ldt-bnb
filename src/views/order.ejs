@@ -1,125 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>ExpressJS</title>
-        <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-            crossorigin="anonymous"
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>ExpressJS</title>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+			crossorigin="anonymous"
 
-        />
-     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    </head>
-    <body>
-        <div class="container-fluid">
-            <div class="row row-offcanvas row-offcanvas-right ">
-                <%- include('sidebar', {page_name}); -%>
-                <div class="col-xs-10 col-sm-10 mt-5" style="text-align: center">
-                    <div class="row justify-content-center" >
-                        <div class="col-4">
-                            <label for="basic-url" class="form-label">Chọn cặp giao dịch:</label>
-                            <div class="input-group mb-3">
-                                <input
-                                id="symbol"
-                                    type="text"
-                                    class="form-control"
-                                    placeholder=""
-                                    aria-label="Example text with button addon"
-                                    aria-describedby="button-addon1"
-                                    value="BTCUSDT"
-                                />
-                                <button
-                                    class="bt btn-success"
-                                    type="button"
-                                    id="button-addon1"
-                                    onclick="setIntervalPriceTickerInterval()"
-                                >
-                                    Xán Nhận
-                                </button>
-                            </div>
-                            
-                        </div>
-                        <h4 id="symbolprice"></h4>
-                    </div>
-                   
-                    <div class="col-12 row mt-3">
-                        <div class="col-3">
-                            <%- include('selectaccount', {page_name}); -%>
-                        </div>
-                        <div class="col-4 border border-dark p-3">
-                            <div class="mb-3">
-                                <input type="radio" class="btn-check" name="buy-sale" id="success-outlined" value="buy" checked>
-                                <label class="btn btn-outline-success col-5" for="success-outlined">Mua</label>
+		/>
+	 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	 <link rel="stylesheet" href="css/main.css">
+	</head>
+	<body>
+		<div class="container-fluid">
+			<div class="row row-offcanvas row-offcanvas-right ">
+				<%- include('sidebar', {page_name}); -%>
+				<div class="col-xs-10 col-sm-10 mt-5" style="text-align: center">
+					<div class="row justify-content-center" >
+						<div class="col-4">
+							<label for="basic-url" class="form-label">Chọn cặp giao dịch:</label>
+							<div class="input-group mb-3">
+								<input
+								id="symbol" type="text"
+									class="form-control"
+									placeholder=""
+									aria-label="Example text with button addon"
+									aria-describedby="button-addon1"
+									value="BTCUSDT"
+								/>
+								<button
+									class="bt btn-success"
+									type="button"
+									id="button-addon1"
+									onclick="setIntervalPriceTickerInterval()"
+								>
+									Xán Nhận
+								</button>
+							</div>
+							
+						</div>
+						<h4 id="symbolprice"></h4>
+					</div>
+				   
+					<div class="col-12 row mt-3 ml-1">
+						<div class="col-3">
+							<div class="border border-dark p-3" style="max-height: 450px;">
+							<%- include('selectaccount', {page_name}); -%>
+							</div>
+						</div>
+					   <div class="col-5" >
+						<div class="border border-dark p-3" style="height: 300px;">
+							<div class="mb-3">
+								<input type="radio" class="btn-check" name="buy-sale" id="success-outlined" value="buy" checked>
+								<label class="btn btn-outline-success col-5" for="success-outlined">Mua</label>
 
-                                <input type="radio" class="btn-check" name="buy-sale" id="danger-outlined" value="sale" >
-                                <label class="btn btn-outline-danger col-5" for="danger-outlined">Bán</label>
-                            </div>
-                            <div class="input-group mb-3">
-                                <label class="input-group-text" for="inputGroupSelect01" style="padding: 0.375rem 6rem;">Loại</label>
-                                <select class="form-select" id="inputGroupSelect01">
-                                  <option class="p-2" selected value="LIMIT">Giới hạn</option>
-                                  <option class="p-2" value="MARKET">Thị trường</option>
-                                </select>
-                            </div>
-                            <div class="input-group mt-3 mb-3">
-                                <input type="text" class="form-control" placeholder="Giá" id="price" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-                            </div>
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" placeholder="Số lượng" id="amount" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-                            </div>
-                            <div class="d-grid gap-2 d-md-block mb-3">
-                                <button class="btn btn-outline-primary col-10" > Xác nhận</button>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- <%- include('footer'); -%> -->
-                </div>
-            </div>
-        </div>
-        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-        <script>
-            var symbolPrice = 0;
+								<input type="radio" class="btn-check" name="buy-sale" id="danger-outlined" value="sale" >
+								<label class="btn btn-outline-danger col-5" for="danger-outlined">Bán</label>
+							</div>
+							<div class="input-group mb-3">
+								<label class="input-group-text" for="inputGroupSelect01" style="padding: 0.375rem 6rem;">Loại</label>
+								<select class="form-select" id="inputGroupSelect01">
+								  <option class="p-2" selected value="LIMIT">Giới hạn</option>
+								  <option class="p-2" value="MARKET">Thị trường</option>
+								</select>
+							</div>
+							<div class="input-group mt-3 mb-3">
+								<input type="text" class="form-control" placeholder="Giá" id="price" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+							</div>
+							<div class="input-group mb-3">
+								<input type="text" class="form-control" placeholder="Số lượng" id="amount" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+							</div>
+							<div class="d-grid gap-2 d-md-block mb-3">
+								<button class="btn btn-outline-primary col-10" > Xác nhận</button>
+							</div>
+						</div>
+					   </div>
+						<div class="col-4 " style="max-height: 450px;">
+							<div class="border border-dark p-3">
+								<button type="button" class="btn btn-primary" onclick="getOrder()" style="width: 130px;">Get Order</button>
+								<button type="button" class="btn btn-secondary" onclick="getBalance()" style="width: 130px;">Get Balance</button>
+								<div id="balanceInfo" class="border border-dark border-2 mt-3 p-2" style="text-align: start; overflow:auto; max-height: 300px;"></div>
+							</div>
 
-            var symbol = document.getElementById("symbol").value.toUpperCase();
+							
+						</div>
+					</div>
+					<!-- <%- include('footer'); -%> -->
+				</div>
+			</div>
+		</div>
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+		<script>
+			var symbolPrice = 0;
 
-            var elementSymbolPrice = document.getElementById("symbolprice");
+			var symbol = document.getElementById("symbol").value.toUpperCase();
 
-            const getPriceTicker = async () => {
-         
-                try {
-                    let burl = "https://api.binance.com";
-                    let endPoint = "/api/v3/ticker/price";
-                    let url = burl + endPoint + '?&symbol=' + symbol;
-                    let response = await axios.get(url);
-                    symbolPrice = parseFloat(response.data.price).toFixed(4);
-                    elementSymbolPrice.innerHTML = `${symbol} : ${symbolPrice}`;
-                }catch (err) {
-                    elementSymbolPrice.innerHTML = `Không có cặp giao dịch!` ;
-                }
-            };
+			var elementSymbolPrice = document.getElementById("symbolprice");
 
-            getPriceTicker();
+			const getPriceTicker = async () => {
+		 
+				try {
+					let burl = "https://api.binance.com";
+					let endPoint = "/api/v3/ticker/price";
+					let url = burl + endPoint + '?&symbol=' + symbol;
+					let response = await axios.get(url);
+					symbolPrice = parseFloat(response.data.price).toFixed(4);
+					elementSymbolPrice.innerHTML = `${symbol} : ${symbolPrice}`;
+				}catch (err) {
+					elementSymbolPrice.innerHTML = `Không có cặp giao dịch!` ;
+				}
+			};
 
-            var getPriceTickerInterval = setInterval(getPriceTicker, 3000);
+			const getBalance = async () => {
+				const balanceInfo = document.getElementById("balanceInfo")
+				balanceInfo.innerHTML = ''
+				try {
+					let startEnd = document.getElementById("numberAccount").value;
+					if(startEnd != ''){
+						const words = startEnd.split('-');
+						let url = "getBalance?&start="+ words[0] +"&end=" + words[1];
+						let response = await axios.get(url);
+						response.data.forEach(element => {
+							const mail = document.createElement("p");
+							const node = document.createTextNode(element.mail);
+							mail.appendChild(node);
+							balanceInfo.appendChild(mail);
+							console.log(element);
+							element.balance.forEach(balance => {
+								const accBalance = document.createElement("p");
+								accBalance.className = "pl-2";
+								console.log('add');
+								accBalance.appendChild(document.createTextNode(balance.asset + " : " + balance.free));
+								balanceInfo.appendChild(accBalance);
+							})
+						});
+					}else{
+						balanceInfo.innerHTML = 'Chưa nhập thứ tự!'
+					}
+					
+				} catch (err) {
+					balanceInfo.innerHTML  = err;
+				}
+			};
 
-            const setIntervalPriceTickerInterval = ()=>{
-                symbol = document.getElementById("symbol").value.toUpperCase();
-                getPriceTicker();
-                clearInterval(getPriceTickerInterval);
-                getPriceTickerInterval = setInterval(getPriceTicker, 3000);
-            } 
+			const getOrder = async () => {
+				const balanceInfo = document.getElementById("balanceInfo")
+				balanceInfo.innerHTML = ''
+				try {
+					let startEnd = document.getElementById("numberAccount").value;
+					if(startEnd != ''){
+						const words = startEnd.split('-');
+						let url = "getOrder?&start="+ words[0] +"&end=" + words[1];
+						let response = await axios.get(url);
+						response.data.forEach(element => {
+							const mail = document.createElement("p");
+							const node = document.createTextNode(element.mail);
+							mail.appendChild(node);
+							balanceInfo.appendChild(mail);
+							console.log(element);
+							element.order.forEach(order => {
+								const accOrder = document.createElement("p");
+								accOrder.className = "pl-2";
+								console.log('add');
+								accOrder.appendChild(document.createTextNode(symbol.asset + " : " + balance.free));
+								balanceInfo.appendChild(accOrder);
+							})
+						});
+					}else{
+						balanceInfo.innerHTML = 'Chưa nhập thứ tự!'
+					}
+					
+				} catch (err) {
+					balanceInfo.innerHTML  = err;
+				}
+			};
 
-        </script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-        <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-            crossorigin="anonymous"
-        ></script>
-        <!-- <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script> -->
-        <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script> -->
-    </body>
+			// getPriceTicker();
+
+			// var getPriceTickerInterval = setInterval(getPriceTicker, 3000);
+
+			// const setIntervalPriceTickerInterval = ()=>{
+			// 	symbol = document.getElementById("symbol").value.toUpperCase();
+			// 	getPriceTicker();
+			// 	clearInterval(getPriceTickerInterval);
+			// 	getPriceTickerInterval = setInterval(getPriceTicker, 3000);
+			// } 
+
+		</script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+			crossorigin="anonymous"
+		></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+		<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script> -->
+	</body>
 </html>

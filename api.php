@@ -93,29 +93,7 @@ function order($apikey,$secretkey,$symbol,$type,$side,$quantity,$price,$stopPric
 
 }
 
-function balance($apikey,$secretkey)
-{
-	$recvWindow = "100000";
-	$ctime = getSVtime();
-	$query = "&timestamp=".$ctime."&recvWindow=".$recvWindow;
-	$sig = hash_hmac('sha256', $query, $secretkey);
-	$url= "https://fapi.binance.com/fapi/v2/balance?".$query."&signature=".$sig;
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_HTTPGET, 1);
-	$headers = array(); $headers[] = 'X-Mbx-Apikey: '.$apikey; curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-	$result = curl_exec($ch);
-
-	if (curl_errno($ch)) {
-	    return 'Error:' . curl_error($ch);
-	}
-	else
-		return $result;
-
-	curl_close ($ch);
-}
 
 function tranfer($apikey,$secretkey,$amount,$type)
 {

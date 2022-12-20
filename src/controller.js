@@ -17,7 +17,6 @@ class Controller {
         const url = "https://api.binance.com/api/v3/time";
         try {
             const response = await axios.get(url);
-            console.log(response.data.serverTime)
             return response.data.serverTime
         } catch (error) {
             console.log("Error getting");
@@ -88,10 +87,8 @@ class Controller {
                     'X-MBX-APIKEY': apiKey
                 }
             }
-            var burl = "https://api.binance.com";
-            var endPoint = "/api/v3/account";
-            var url = burl + endPoint + '?' + query + '&signature=' + sig;
-            console.log(url);
+            var burl = 'https://api.binance.com/api/v3/account';
+            var url = burl +'?' + query + '&signature=' + sig;
             var data = await axios.get(url, headers);
             data = data.data.balances.filter(balance => parseFloat(balance["free"]) > 0.02);
             return data;
@@ -111,7 +108,6 @@ class Controller {
             for (let i = start; i <= end; i++) {
                 let orders = await this.queryOpen(data[i]['apiKey'], data[i]['secretKey'], ctime)
                 response.push({"mail" : i + " " + data[i]['mail'], "orders": orders});
-                console.log(data[i]['mail'])
             }
             res.json(response);
         } catch (error) {
@@ -129,12 +125,12 @@ class Controller {
                     'X-MBX-APIKEY': apiKey
                 }
             }
-            var burl = "https://api.binance.com";
-            var endPoint = "/api/v3/openOrders";
-            var url = burl + endPoint + '?' + query + '&signature=' + sig;
+            var burl = "https://api.binance.com/api/v3/openOrders";
+            var url = burl + '?' + query + '&signature=' + sig;
             var data = await axios.get(url, headers);
             return data.data;
         } catch (err) {
+            console.log(err);
             return err;
         }
     }
@@ -145,15 +141,12 @@ class Controller {
             let data = await this.loadFile('./account.json');
             data = JSON.parse(data);
             let [start, end] = this.getStartEnd(req, data)
-            let response = [];
             for (let i = start; i <= end; i++) {
-                let orders = await this.handlerCreateOrder(data[i]['apiKey'], data[i]['secretKey'], ctime, req)
-                response.push({"mail" : i + " " + data[i]['mail'], "orders": orders});
-                console.log(data[i]['mail'])
+                await this.handlerCreateOrder(data[i]['apiKey'], data[i]['secretKey'], ctime, req)
             }
-            res.json("success");
+            res.json(req.query.side);
         } catch (error) {
-            res.json('Không có dữ liệu trùng khớp!');
+            res.json('Có lỗi!');
         }
     }
 
@@ -162,21 +155,31 @@ class Controller {
 			let side = req.query.side
 			let type = req.query.type
 			let price = req.query.price
-			let amount = req.query.amount
+            let symbol = req.query.symbol
+			let quantity = req.query.amount
             let recvWindow = "50000";
-            let query = "&timestamp=" + ctime + "&recvWindow=" + recvWindow;
-            let sig = crypto.createHmac("sha256", secretKey).update(query).digest('hex');
-            let headers = {
-                headers: {
-                    'X-MBX-APIKEY': apiKey
-                }
+            let query
+            if(type== "LIMIT") //"LIMIT"
+            {
+                query = "timestamp=" + ctime+"&symbol=" + symbol+ "&side=" + side + "&type=" + type + "&timeInForce=GTC&quantity=" + quantity + "&price=" + price + "&recvWindow=" + recvWindow;
             }
-            var burl = "https://api.binance.com";
-            var endPoint = "/api/v3/openOrders";
-            var url = burl + endPoint + '?' + query + '&signature=' + sig;
-            var data = await axios.get(url, headers);
+            else if(type=="MARKET") //"MARKET"
+            {
+                query = "timestamp="+ctime+"&symbol=" + symbol + "&side=" + side + "&type=" + type + "&quantity=" + quantity;
+            }
+
+            let sig = crypto.createHmac("sha256", secretKey).update(query).digest('hex');
+            let 
+                headers= {
+                    'X-MBX-APIKEY': apiKey
+            }
+            var burl = "https://api.binance.com/api/v3/order?";
+            var url = burl + query + '&signature=' + sig;
+            console.log(url);
+            var data = await axios.post(url, {}, headers);
             return data.data;
         } catch (err) {
+            // console.log(err);
             return err;
         }
     }

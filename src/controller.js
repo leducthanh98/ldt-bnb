@@ -24,6 +24,14 @@ class Controller {
         }
     }
 
+    getStartEnd = (req, data)=> {
+        let start = req.query.start;
+        let end = req.query.end ? req.query.end : data.length - 1;
+        end = end == 'undefined' ? start : end;
+        end = end > data.length - 1 || end == 'undefined' ? data.length - 1 : end;
+        return [start, end];
+    }
+
     getPriceTicker = async (req, res, next) => {
         try {
             let symbol = req.params.symbol.toUpperCase();
@@ -62,7 +70,7 @@ class Controller {
             let response = [];
             for (let i = start; i <= end; i++) {
                 let balance = await this.queryBalance(data[i]['apiKey'], data[i]['secretKey'], ctime)
-                response.push({"mail" : data[i]['mail'], "balance": balance});
+                response.push({"mail" : i + " " + data[i]['mail'], "balance": balance});
             }
             res.json(response);
         } catch (error) {
@@ -102,7 +110,8 @@ class Controller {
             let response = [];
             for (let i = start; i <= end; i++) {
                 let orders = await this.queryOpen(data[i]['apiKey'], data[i]['secretKey'], ctime)
-                response.push({"mail" : data[i]['mail'], "orders": orders});
+                response.push({"mail" : i + " " + data[i]['mail'], "orders": orders});
+                console.log(data[i]['mail'])
             }
             res.json(response);
         } catch (error) {
@@ -130,13 +139,48 @@ class Controller {
         }
     }
 
-    getStartEnd = (req, data)=> {
-        let start = req.query.start;
-        let end = req.query.end ? req.query.end : data.length - 1;
-        end = end == 'undefined' ? start : end;
-        end = end > data.length - 1 || end == 'undefined' ? data.length - 1 : end;
-        return [start, end];
+    createOrder = async (req, res, next) => {
+        try {
+            let ctime = await this.getServerTime();
+            let data = await this.loadFile('./account.json');
+            data = JSON.parse(data);
+            let [start, end] = this.getStartEnd(req, data)
+            let response = [];
+            for (let i = start; i <= end; i++) {
+                let orders = await this.handlerCreateOrder(data[i]['apiKey'], data[i]['secretKey'], ctime, req)
+                response.push({"mail" : i + " " + data[i]['mail'], "orders": orders});
+                console.log(data[i]['mail'])
+            }
+            res.json("success");
+        } catch (error) {
+            res.json('Không có dữ liệu trùng khớp!');
+        }
     }
+
+    async handlerCreateOrder (apiKey, secretKey, ctime, req) {
+        try {
+			let side = req.query.side
+			let type = req.query.type
+			let price = req.query.price
+			let amount = req.query.amount
+            let recvWindow = "50000";
+            let query = "&timestamp=" + ctime + "&recvWindow=" + recvWindow;
+            let sig = crypto.createHmac("sha256", secretKey).update(query).digest('hex');
+            let headers = {
+                headers: {
+                    'X-MBX-APIKEY': apiKey
+                }
+            }
+            var burl = "https://api.binance.com";
+            var endPoint = "/api/v3/openOrders";
+            var url = burl + endPoint + '?' + query + '&signature=' + sig;
+            var data = await axios.get(url, headers);
+            return data.data;
+        } catch (err) {
+            return err;
+        }
+    }
+    
 }
 
 module.exports = new Controller 

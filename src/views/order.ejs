@@ -54,15 +54,15 @@
 					   <div class="col-5" >
 						<div class="border border-dark p-3" style="height: 300px;">
 							<div class="mb-3">
-								<input type="radio" class="btn-check" name="buy-sale" id="success-outlined" value="buy" checked>
+								<input type="radio" class="btn-check" name="buySale" id="success-outlined" value="BUY" checked>
 								<label class="btn btn-outline-success col-5" for="success-outlined">Mua</label>
 
-								<input type="radio" class="btn-check" name="buy-sale" id="danger-outlined" value="sale" >
+								<input type="radio" class="btn-check" name="buySale" id="danger-outlined" value="SALE" >
 								<label class="btn btn-outline-danger col-5" for="danger-outlined">Bán</label>
 							</div>
 							<div class="input-group mb-3">
-								<label class="input-group-text" for="inputGroupSelect01" style="padding: 0.375rem 6rem;">Loại</label>
-								<select class="form-select" id="inputGroupSelect01">
+								<label class="input-group-text" for="type" style="padding: 0.375rem 6rem;">Loại</label>
+								<select class="form-select" id="type" name="type">
 								  <option class="p-2" selected value="LIMIT">Giới hạn</option>
 								  <option class="p-2" value="MARKET">Thị trường</option>
 								</select>
@@ -74,7 +74,7 @@
 								<input type="text" class="form-control" placeholder="Số lượng" id="amount" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
 							</div>
 							<div class="d-grid gap-2 d-md-block mb-3">
-								<button class="btn btn-outline-primary col-10" > Xác nhận</button>
+								<button class="btn btn-outline-primary col-10" onclick="createOrder()" > Xác nhận</button>
 							</div>
 						</div>
 					   </div>
@@ -82,7 +82,7 @@
 							<div class="border border-dark p-3">
 								<button type="button" class="btn btn-primary" onclick="getOrder()" style="width: 130px;">Get Order</button>
 								<button type="button" class="btn btn-secondary" onclick="getBalance()" style="width: 130px;">Get Balance</button>
-								<div id="balanceInfo" class="border border-dark border-2 mt-3 p-2" style="text-align: start; overflow:auto; max-height: 300px;"></div>
+								<div id="info" class="border border-dark border-2 mt-3 p-2" style="text-align: start; overflow:auto; max-height: 300px;"></div>
 							</div>
 
 							
@@ -115,8 +115,8 @@
 			};
 
 			const getBalance = async () => {
-				const balanceInfo = document.getElementById("balanceInfo")
-				balanceInfo.innerHTML = ''
+				const info = document.getElementById("info")
+				info.innerHTML = ''
 				try {
 					let startEnd = document.getElementById("numberAccount").value;
 					if(startEnd != ''){
@@ -127,28 +127,26 @@
 							const mail = document.createElement("p");
 							const node = document.createTextNode(element.mail);
 							mail.appendChild(node);
-							balanceInfo.appendChild(mail);
-							console.log(element);
+							info.appendChild(mail);
 							element.balance.forEach(balance => {
 								const accBalance = document.createElement("p");
 								accBalance.className = "pl-2";
-								console.log('add');
-								accBalance.appendChild(document.createTextNode(balance.asset + " : " + balance.free));
-								balanceInfo.appendChild(accBalance);
+								accBalance.appendChild(document.createTextNode(balance.asset + " : " + parseFloat(balance.free)));
+								info.appendChild(accBalance);
 							})
 						});
 					}else{
-						balanceInfo.innerHTML = 'Chưa nhập thứ tự!'
+						info.innerHTML = 'Chưa nhập thứ tự!'
 					}
 					
 				} catch (err) {
-					balanceInfo.innerHTML  = err;
+					info.innerHTML  = err;
 				}
 			};
 
 			const getOrder = async () => {
-				const balanceInfo = document.getElementById("balanceInfo")
-				balanceInfo.innerHTML = ''
+				const info = document.getElementById("info")
+				info.innerHTML = ''
 				try {
 					let startEnd = document.getElementById("numberAccount").value;
 					if(startEnd != ''){
@@ -159,35 +157,60 @@
 							const mail = document.createElement("p");
 							const node = document.createTextNode(element.mail);
 							mail.appendChild(node);
-							balanceInfo.appendChild(mail);
-							console.log(element);
-							element.order.forEach(order => {
+							info.appendChild(mail);
+							element.orders.forEach(order => {
 								const accOrder = document.createElement("p");
 								accOrder.className = "pl-2";
-								console.log('add');
-								accOrder.appendChild(document.createTextNode(symbol.asset + " : " + balance.free));
-								balanceInfo.appendChild(accOrder);
+								accOrder.appendChild(document.createTextNode( order.side + " "+ order.symbol + " : " + parseFloat(order.origQty) + " - " + parseFloat(order.price)));
+								info.appendChild(accOrder);
 							})
 						});
 					}else{
-						balanceInfo.innerHTML = 'Chưa nhập thứ tự!'
+						info.innerHTML = 'Chưa nhập thứ tự!'
 					}
 					
 				} catch (err) {
-					balanceInfo.innerHTML  = err;
+					info.innerHTML  = err;
 				}
 			};
 
-			// getPriceTicker();
+			const createOrder = async () => {
+				const info = document.getElementById("info")
+				info.innerHTML = ''
+				try {
+					let startEnd = document.getElementById("numberAccount").value;
+					let side = document.getElementById("type").options[document.getElementById("type").selectedIndex].value;
+					let type = document.querySelector('input[name="type"]:checked').value;
+					let price = document.getElementById("price").value;
+					let amount = document.getElementById("amount").value;
+					if(startEnd != ''){
+						const words = startEnd.split('-');
+						let url = "createOrder?&start="+ words[0] +"&end=" + words[1]+"symbol=" + "side=" + side + symbol+"type="+ type+"price="+ price+"amount";
+						let response = await axios.get(url);
+						console.log(response);
+						if (response.data == "LIMIT"){
+							getOrder();
+						}else{
+							getBalance();
+						}
+					}else{
+						info.innerHTML = 'Chưa nhập thứ tự!'
+					}
+				} catch (err) {
+					info.innerHTML  = err;
+				}
+			};
 
-			// var getPriceTickerInterval = setInterval(getPriceTicker, 3000);
+			getPriceTicker();
 
-			// const setIntervalPriceTickerInterval = ()=>{
-			// 	symbol = document.getElementById("symbol").value.toUpperCase();
-			// 	getPriceTicker();
-			// 	clearInterval(getPriceTickerInterval);
-			// 	getPriceTickerInterval = setInterval(getPriceTicker, 3000);
-			// } 
+			var getPriceTickerInterval = setInterval(getPriceTicker, 3000);
+
+			const setIntervalPriceTickerInterval = ()=>{
+				symbol = document.getElementById("symbol").value.toUpperCase();
+				getPriceTicker();
+				clearInterval(getPriceTickerInterval);
+				getPriceTickerInterval = setInterval(getPriceTicker, 3000);
+			} 
 
 		</script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>

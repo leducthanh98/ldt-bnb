@@ -6,6 +6,7 @@ module.exports = function (app, obj) {
     app.get('/getAccount', controller.getAccount)
     app.get('/getBalance', controller.getBalance)
     app.get('/getOrder', controller.getOrder)
+    app.get('/createOrder', controller.createOrder)
     app.get('/test', controller.getOrder)
     app.get('/:towfa', (req, res) => {
         const newToken = twofactor.generateToken(req.params.towfa); 

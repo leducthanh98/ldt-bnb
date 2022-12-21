@@ -120,14 +120,14 @@ class Controller {
             let recvWindow = "50000";
             let query = "&timestamp=" + ctime + "&recvWindow=" + recvWindow;
             let sig = crypto.createHmac("sha256", secretKey).update(query).digest('hex');
-            let headers = {
-                headers: {
-                    'X-MBX-APIKEY': apiKey
-                }
-            }
+            let 
+                headers= [
+                    'X-MBX-APIKEY:'+ apiKey
+                ]
+            
             var burl = "https://api.binance.com/api/v3/openOrders";
             var url = burl + '?' + query + '&signature=' + sig;
-            var data = await axios.get(url, headers);
+            var data = await axios.get(url, {},headers);
             return data.data;
         } catch (err) {
             console.log(err);
@@ -170,16 +170,16 @@ class Controller {
 
             let sig = crypto.createHmac("sha256", secretKey).update(query).digest('hex');
             let 
-                headers= {
-                    'X-MBX-APIKEY': apiKey
-            }
+            headers= [
+                'X-MBX-APIKEY:'+ apiKey
+            ]
             var burl = "https://api.binance.com/api/v3/order?";
             var url = burl + query + '&signature=' + sig;
             console.log(url);
             var data = await axios.post(url, {}, headers);
             return data.data;
         } catch (err) {
-            // console.log(err);
+            console.log(err);
             return err;
         }
     }

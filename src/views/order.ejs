@@ -179,13 +179,14 @@
 				info.innerHTML = ''
 				try {
 					let startEnd = document.getElementById("numberAccount").value;
-					let side = document.getElementById("type").options[document.getElementById("type").selectedIndex].value;
-					let type = document.querySelector('input[name="type"]:checked').value;
+					let type = document.getElementById("type").options[document.getElementById("type").selectedIndex].value;
+					let side = document.querySelector('input[name="buySale"]:checked').value;
 					let price = document.getElementById("price").value;
 					let amount = document.getElementById("amount").value;
+					console.log([side, price, amount,type])
 					if(startEnd != ''){
 						const words = startEnd.split('-');
-						let url = "createOrder?&start="+ words[0] +"&end=" + words[1]+"symbol=" + "side=" + side + symbol+"type="+ type+"price="+ price+"amount";
+						let url = "createOrder?&start="+ words[0] +"&end=" + words[1]+"&symbol=" + symbol + "&side=" + side +"&type="+ type+"&price="+ price+ "&amount=" + amount;
 						let response = await axios.get(url);
 						console.log(response);
 						if (response.data == "LIMIT"){

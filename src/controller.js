@@ -120,11 +120,11 @@ class Controller {
             let recvWindow = "50000";
             let query = "&timestamp=" + ctime + "&recvWindow=" + recvWindow;
             let sig = crypto.createHmac("sha256", secretKey).update(query).digest('hex');
-            let 
-                headers= [
-                    'X-MBX-APIKEY:'+ apiKey
-                ]
-            
+            let headers = {
+                headers: {
+                    'X-MBX-APIKEY': apiKey
+                }
+            }
             var burl = "https://api.binance.com/api/v3/openOrders";
             var url = burl + '?' + query + '&signature=' + sig;
             var data = await axios.get(url, {},headers);
@@ -159,20 +159,19 @@ class Controller {
 			let quantity = req.query.amount
             let recvWindow = "50000";
             let query
-            if(type== "LIMIT") //"LIMIT"
+            if(type== "LIMIT")
             {
-                query = "timestamp=" + ctime+"&symbol=" + symbol+ "&side=" + side + "&type=" + type + "&timeInForce=GTC&quantity=" + quantity + "&price=" + price + "&recvWindow=" + recvWindow;
+                query = "symbol=" + symbol + "&side=" + side + "&type=" + type + "&timeInForce=GTC&quantity=" + quantity + "&price=" + price + "&recvWindow=" + recvWindow + "&timestamp=" + ctime;
             }
-            else if(type=="MARKET") //"MARKET"
+            else if(type=="MARKET")
             {
-                query = "timestamp="+ctime+"&symbol=" + symbol + "&side=" + side + "&type=" + type + "&quantity=" + quantity;
+                query =  "symbol=" + symbol + "&side=" + side + "&type=" + type + "&timestamp=" + ctime;
             }
 
             let sig = crypto.createHmac("sha256", secretKey).update(query).digest('hex');
-            let 
-            headers= [
-                'X-MBX-APIKEY:'+ apiKey
-            ]
+            let headers = {headers: {
+                'X-MBX-APIKEY': apiKey,
+            }}
             var burl = "https://api.binance.com/api/v3/order?";
             var url = burl + query + '&signature=' + sig;
             console.log(url);
